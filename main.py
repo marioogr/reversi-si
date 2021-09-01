@@ -22,58 +22,33 @@ class JuegoOtello:
         for i in range(0,6):
             for j in range(0,6):
                 if self.tablero[i][j] == jugador1:
+                    #derecha / abajo ** check
                     for count in range(j+1, 6):
                         if self.tablero[i][count] == jugador2: 
                             if self.tablero[i][count+1] == 0: 
                                 jugadasPosibles.append((i, count+1))
                         else: break
-
+                    #izquierda / arriba ** ta mala
                     for count in range(j-1, 0, -1):
                         if self.tablero[i][count] == jugador2: 
                             if self.tablero[i][count-1] == 0: 
                                 jugadasPosibles.append((i, count-1))
                             else: break
-
+                    #arriba / derecha
                     for count in range(i+1, 6):
                         if self.tablero[count][j] == jugador2: 
                             if self.tablero[count+1][j] == 0: 
                                 jugadasPosibles.append((count+1, j))
                             else: break
-
+                            
+                    #abajo / izquierda
                     for count in range(i-1, 0, -1):
                         if self.tablero[count][j] == jugador2: 
                             if self.tablero[count-1][j] == 0: 
                                 jugadasPosibles.append((count-1, j))
                             else: break
-                    
-                    for count in range(i+1, 6):
-                        for count2 in range(j+1, 6):
-                            if self.tablero[count][count2] == jugador2: 
-                                if self.tablero[count+1][count2+1] == 0: 
-                                    jugadasPosibles.append((count+1, count2+1))
-                                else: break
-
-                    for count in range(i-1, 0, -1):
-                        for count2 in range(j-1, 0, -1):
-                            if self.tablero[count][count2] == jugador2: 
-                                if self.tablero[count-1][count2-1] == 0: 
-                                    jugadasPosibles.append((count-1, count2-1))
-                                else: break
-
-                    for count in range(i-1, 0, -1):
-                        for count2 in range(j+1, 6):
-                            if self.tablero[count][count2] == jugador2: 
-                                if self.tablero[count-1][count2+1] == 0: 
-                                    jugadasPosibles.append((count-1, count2+1))
-                                else: break
-
-                    for count in range(i+1, 6):
-                        for count2 in range(j-1, 0, -1):
-                            if self.tablero[count][count2] == jugador2: 
-                                if self.tablero[count+1][count2-1] == 0: 
-                                    jugadasPosibles.append((count+1, count2-1))
-                                else: break
-                    
+                    #arriba derecha
+  
         return jugadasPosibles
     
 
@@ -93,15 +68,13 @@ class JuegoOtello:
     def minMax(self):
         raise NotImplementedError
         
-
-
 class Tablero:
     def __init__(self):
         self.tablero = [
             [0,0,0,0,0,0],
-            [0,0,0,0,0,0],
-            [0,0,2,1,0,0],
-            [0,0,1,2,0,0],
+            [0,0,0,2,2,0],
+            [0,0,2,1,2,0],
+            [0,0,1,2,2,0],
             [0,0,0,0,0,0],
             [0,0,0,0,0,0],
         ]
@@ -206,19 +179,14 @@ def main():
 
         juego.setTablero(tablero.tablero)
         
-        jugadasPosibles = juego.generarJugadasPosibles(2,1)
+        jugadasPosibles = juego.generarJugadasPosibles(1,2)
         
-
         tablero.marcarPorMouse(posMouse, jugadasPosibles)
-
-        tablero.restablecerBlanco(posMouse)
 
         clock.tick(30)
 
-        
         tablero.renderizarTablero(screen)
-
-        
+        tablero.DepImprimirtablero()
         pygame.display.flip()
 
 main()
