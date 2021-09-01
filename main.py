@@ -13,43 +13,63 @@ class JuegoOtello:
     def setTablero (self, tablero):
         self.tablero = tablero
 
-    def generarJugadasPosibles(self, jugador1, jugador2):
+
+    def busqueda(self, fila, columna, juagdor):
+        
+        if juagdor == 1:
+            otro = 2
+        else:
+            otro = 1
+
+        casillas = []
+
+        if fila < 0 or fila > 7 or columna < 0 or columna > 7:
+            return casillas
+
+        # For each direction search for possible positions to put a piece.
+        for (x, y) in [
+                (-1, 0),
+                (-1, 1),
+                (0, 1),
+                (1, 1),
+                (1, 0),
+                (1, -1),
+                (0, -1),
+                (-1, -1)
+            ]:
+            pos = self.verifica_direccion(fila, columna, x, y, otro)
+            if pos:
+                casillas.append(pos)
+        return casillas
+
+    def verifica_direccion(self, fila, columna, x, y, otro):
+        i = fila + x
+        j = columna + y
+        if (i >= 0 and j >= 0 and i < 8 and j < 8 and self.tablero[i][j] == otro):
+            i += x
+            j += y
+            while (i >= 0 and j >= 0 and i < 8 and j < 8 and self.tablero[i][j] == otro):
+                i += x
+                j += y
+            if (i >= 0 and j >= 0 and i < 8 and j < 8 and self.tablero[i][j] == 0):
+                return (i, j)
+
+
+    def generarJugadasPosibles(self, jugador):
         """
         Retorna un arreglo de coordenadas de las jugadas posibles 
 
         """
-        jugadasPosibles = []
-        for i in range(0,6):
-            for j in range(0,6):
-                if self.tablero[i][j] == jugador1:
-                    #derecha / abajo ** check
-                    for count in range(j+1, 6):
-                        if self.tablero[i][count] == jugador2: 
-                            if self.tablero[i][count+1] == 0: 
-                                jugadasPosibles.append((i, count+1))
-                        else: break
-                    #izquierda / arriba ** ta mala
-                    for count in range(j-1, 0, -1):
-                        if self.tablero[i][count] == jugador2: 
-                            if self.tablero[i][count-1] == 0: 
-                                jugadasPosibles.append((i, count-1))
-                            else: break
-                    #arriba / derecha
-                    for count in range(i+1, 6):
-                        if self.tablero[count][j] == jugador2: 
-                            if self.tablero[count+1][j] == 0: 
-                                jugadasPosibles.append((count+1, j))
-                            else: break
-                            
-                    #abajo / izquierda
-                    for count in range(i-1, 0, -1):
-                        if self.tablero[count][j] == jugador2: 
-                            if self.tablero[count-1][j] == 0: 
-                                jugadasPosibles.append((count-1, j))
-                            else: break
-                    #arriba derecha
-  
+       
+        jugadasPosibles=[]
+        for i in range(6):
+            for j in range(6):
+                if self.tablero[i][j]==jugador:
+                    jugadasPosibles=jugadasPosibles+self.busqueda(i,j,jugador)
+        jugadasPosibles=list(set(jugadasPosibles))
+        print(jugadasPosibles)
         return jugadasPosibles
+        
     
 
     def CalcularUtilidad(self, jugador):
@@ -72,9 +92,9 @@ class Tablero:
     def __init__(self):
         self.tablero = [
             [0,0,0,0,0,0],
-            [0,0,0,2,2,0],
-            [0,0,2,1,2,0],
-            [0,0,1,2,2,0],
+            [0,0,0,0,0,0],
+            [0,0,2,2,0,0],
+            [0,0,2,1,0,0],
             [0,0,0,0,0,0],
             [0,0,0,0,0,0],
         ]
@@ -179,7 +199,7 @@ def main():
 
         juego.setTablero(tablero.tablero)
         
-        jugadasPosibles = juego.generarJugadasPosibles(1,2)
+        jugadasPosibles = juego.generarJugadasPosibles(1)
         
         tablero.marcarPorMouse(posMouse, jugadasPosibles)
 
