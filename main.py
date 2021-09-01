@@ -45,13 +45,13 @@ class JuegoOtello:
     def verifica_direccion(self, fila, columna, x, y, otro):
         i = fila + x
         j = columna + y
-        if (i >= 0 and j >= 0 and i < 8 and j < 8 and self.tablero[i][j] == otro):
+        if (i >= 0 and j >= 0 and i < 6 and j < 6 and self.tablero[i][j] == otro):
             i += x
             j += y
-            while (i >= 0 and j >= 0 and i < 8 and j < 8 and self.tablero[i][j] == otro):
+            while (i >= 0 and j >= 0 and i < 6 and j < 6 and self.tablero[i][j] == otro):
                 i += x
                 j += y
-            if (i >= 0 and j >= 0 and i < 8 and j < 8 and self.tablero[i][j] == 0):
+            if (i >= 0 and j >= 0 and i < 6 and j < 6 and self.tablero[i][j] == 0):
                 return (i, j)
 
 
@@ -93,7 +93,7 @@ class Tablero:
         self.tablero = [
             [0,0,0,0,0,0],
             [0,0,0,0,0,0],
-            [0,0,2,2,0,0],
+            [0,0,1,2,1,1],
             [0,0,2,1,0,0],
             [0,0,0,0,0,0],
             [0,0,0,0,0,0],
