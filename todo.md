@@ -1,5 +1,5 @@
 # To Do
-## Funcion que busque las jugadas posibles -> retorna array [[x, y], [x, y]] (Pablo)
+## Funcion que busque las jugadas posibles -> retorna array [[x, y], [x, y]] (Pablo) :heavy_check_mark:
 
 ## Dado el tablero con jugada y jugador, calcular utilidad -> cantidad de cuadrados del jugador (Ariel)
 
