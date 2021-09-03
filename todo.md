@@ -1,6 +1,5 @@
 # To Do
-## función que intercale quien este jugando despues de un movimiento hecho(Pablo):heavy_check_mark:
-## refactorización del juego para usabilidad mas simple(Pablo):heavy_check_mark:
+##función que intercale quien este jugando despues de un movimiento hecho(None)
 ## Funcion que busque las jugadas posibles -> retorna array [[x, y], [x, y]] (Pablo) :heavy_check_mark:
 
 ## Dado el tablero con jugada y jugador, calcular utilidad -> cantidad de cuadrados del jugador (Ariel)
