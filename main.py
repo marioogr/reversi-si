@@ -149,13 +149,15 @@ class JuegoOtello:
             print(self.tablero[i])
 
     def clickear_tablero(self, posMouse):
-
+        jugadas = self.generarJugadasPosibles()
         if pygame.mouse.get_pressed()[0] and self.turno == 1:
             x = int(math.trunc(posMouse[0] / 100))
             y = int(math.trunc(posMouse[1] / 100))
             print(x, y)
             if self.tablero[x][y] == 3:
                 self.tablero[x][y] = 1
+                for i in range(1, 7):
+                    self.voltear(i, (x,y), 1)
                 self.cambiar_turno()
 
         if pygame.mouse.get_pressed()[0] and self.turno == 2:
@@ -163,8 +165,72 @@ class JuegoOtello:
             y = int(math.trunc(posMouse[1] / 100))
             if self.tablero[x][y] == 3:
                 self.tablero[x][y] = 2
+                for i in range(1, 9):
+                    self.voltear(i,(x,y) , 2)
                 self.cambiar_turno()
 
+    def voltear(self, direccion, jugada,jugador):
+        """ Flips (capturates) the pieces of the given color in the given direction
+        (1=North,2=Northeast...) from position. """
+
+        if direccion == 1:
+            # north
+            row_inc = -1
+            col_inc = 0
+        elif direccion == 2:
+            # northeast
+            row_inc = -1
+            col_inc = 1
+        elif direccion == 3:
+            # east
+            row_inc = 0
+            col_inc = 1
+        elif direccion == 4:
+            # southeast
+            row_inc = 1
+            col_inc = 1
+        elif direccion == 5:
+            # south
+            row_inc = 1
+            col_inc = 0
+        elif direccion == 6:
+            # southwest
+            row_inc = 1
+            col_inc = -1
+        elif direccion == 7:
+            # west
+            row_inc = 0
+            col_inc = -1
+        elif direccion == 8:
+            # northwest
+            row_inc = -1
+            col_inc = -1
+
+        places = []  # pieces to flip
+        print(jugada[0],jugada[1])
+        i = jugada[0] + row_inc
+        j = jugada[1] + col_inc
+
+        if jugador == 1:
+            otro = 2
+        else:
+            otro = 1
+
+        if i in range(8) and j in range(8) and self.tablero[i][j] == otro:
+            # assures there is at least one piece to flip
+            places = places + [(i, j)]
+            i = i + row_inc
+            j = j + col_inc
+            while i in range(8) and j in range(8) and self.tablero[i][j] == otro:
+                # search for more pieces to flip
+                places = places + [(i, j)]
+                i = i + row_inc
+                j = j + col_inc
+            if i in range(8) and j in range(8) and self.tablero[i][j] == jugador:
+                # found a piece of the right color to flip the pieces between
+                for pos in places:
+                    # flips
+                    self.tablero[pos[0]][pos[1]] = jugador
 
 
 """
