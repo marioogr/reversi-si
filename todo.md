@@ -5,7 +5,7 @@
 
 ## Dado el tablero con jugada y jugador, calcular utilidad -> cantidad de cuadrados del jugador (Ariel)
 
-## Arreglar direccion del tablero, mostrar score, menu (Mario)
+## Arreglar direccion del tablero, mostrar score, menu, mostrar turno actual (Mario)
 ## Al hacer click modificar ficha en blanco por color de jugador en patida(Pablo):heavy_check_mark:
 ## Fichas afectadas -> Tablero con fichas afectadas (Jaime)
 
