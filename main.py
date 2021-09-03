@@ -157,7 +157,7 @@ class JuegoOtello:
             if self.tablero[x][y] == 3:
                 self.tablero[x][y] = 1
                 for i in range(1, 7):
-                    self.voltear(i, (x,y), 1)
+                    self.voltear(i, (x, y), 1)
                 self.cambiar_turno()
 
         if pygame.mouse.get_pressed()[0] and self.turno == 2:
@@ -166,10 +166,10 @@ class JuegoOtello:
             if self.tablero[x][y] == 3:
                 self.tablero[x][y] = 2
                 for i in range(1, 9):
-                    self.voltear(i,(x,y) , 2)
+                    self.voltear(i, (x, y), 2)
                 self.cambiar_turno()
 
-    def voltear(self, direccion, jugada,jugador):
+    def voltear(self, direccion, jugada, jugador):
         """ Flips (capturates) the pieces of the given color in the given direction
         (1=North,2=Northeast...) from position. """
 
@@ -207,7 +207,7 @@ class JuegoOtello:
             col_inc = -1
 
         places = []  # pieces to flip
-        print(jugada[0],jugada[1])
+
         i = jugada[0] + row_inc
         j = jugada[1] + col_inc
 
@@ -216,17 +216,17 @@ class JuegoOtello:
         else:
             otro = 1
 
-        if i in range(8) and j in range(8) and self.tablero[i][j] == otro:
+        if i in range(6) and j in range(6) and self.tablero[i][j] == otro:
             # assures there is at least one piece to flip
             places = places + [(i, j)]
             i = i + row_inc
             j = j + col_inc
-            while i in range(8) and j in range(8) and self.tablero[i][j] == otro:
+            while i in range(6) and j in range(6) and self.tablero[i][j] == otro:
                 # search for more pieces to flip
                 places = places + [(i, j)]
                 i = i + row_inc
                 j = j + col_inc
-            if i in range(8) and j in range(8) and self.tablero[i][j] == jugador:
+            if i in range(6) and j in range(6) and self.tablero[i][j] == jugador:
                 # found a piece of the right color to flip the pieces between
                 for pos in places:
                     # flips
