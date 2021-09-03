@@ -163,7 +163,7 @@ class Tablero:
             if self.tablero[x][y] == 3:
                 self.tablero[x][y] = 2
 
-    def fichas_afectadas(self):
+
 
 
 def renderizarTablero(tablero: Tablero, screen):
