@@ -1,4 +1,7 @@
-import sys, pygame, math
+import sys
+import pygame
+import math
+import pandas as pd
 
 pygame.init()
 
@@ -6,17 +9,27 @@ pygame.init()
 # Jugador 1 = 1, Agente = 2
 
 class JuegoOtello:
-    def __init__(self, tablero, turno):
-        self.tablero = tablero
+    def __init__(self, turno):
+        self.tablero = [
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 2, 0, 0],
+            [0, 0, 2, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+        ]
         self.completado = False
         self.turno = turno
 
-    def setTablero(self, tablero):
-        self.tablero = tablero
+    def cambiar_turno(self):
+        if self.turno == 1:
+            self.turno=2
+        else:
+            self.turno=1
 
-    def busqueda(self, fila, columna, juagdor):
+    def busqueda(self, fila, columna):
 
-        if juagdor == 1:
+        if self.turno == 1:
             otro = 2
         else:
             otro = 1
@@ -45,16 +58,16 @@ class JuegoOtello:
     def verifica_direccion(self, fila, columna, x, y, otro):
         i = fila + x
         j = columna + y
-        if i >= 0 and j >= 0 and i < 6 and j < 6 and self.tablero[i][j] == otro:
+        if 0 <= i < 6 and 0 <= j < 6 and self.tablero[i][j] == otro:
             i += x
             j += y
-            while i >= 0 and j >= 0 and i < 6 and j < 6 and self.tablero[i][j] == otro:
+            while 0 <= i < 6 and 0 <= j < 6 and self.tablero[i][j] == otro:
                 i += x
                 j += y
             if i >= 0 and j >= 0 and i < 6 and j < 6 and self.tablero[i][j] == 0:
-                return (i, j)
+                return i, j
 
-    def generarJugadasPosibles(self, jugador):
+    def generarJugadasPosibles(self):
         """
         Retorna un arreglo de coordenadas de las jugadas posibles 
 
@@ -63,17 +76,17 @@ class JuegoOtello:
         jugadasPosibles = []
         for i in range(6):
             for j in range(6):
-                if self.tablero[i][j] == jugador:
-                    jugadasPosibles = jugadasPosibles + self.busqueda(i, j, jugador)
+                if self.tablero[i][j] == self.turno:
+                    jugadasPosibles = jugadasPosibles + self.busqueda(i, j)
         jugadasPosibles = list(set(jugadasPosibles))
         print(jugadasPosibles)
         return jugadasPosibles
 
-    def CalcularUtilidad(self, jugador):
+    def CalcularUtilidad(self):
         count = 0
         for i in range(0, 6):
             for j in range(0, 6):
-                if self.tablero[i][j] == jugador:
+                if self.tablero[i][j] == self.turno:
                     count = count + 1
         return count
 
@@ -85,21 +98,6 @@ class JuegoOtello:
 
     def minMax(self):
         raise NotImplementedError
-
-
-class Tablero:
-    def __init__(self):
-        self.tablero = [
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 2, 0, 0],
-            [0, 0, 2, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-        ]
-
-    def actualizarTablero(self, x, y, valor):
-        self.tablero[x][y] = valor
 
     def renderizarTablero(self, screen):
 
@@ -123,7 +121,8 @@ class Tablero:
                 if self.tablero[i][j] == 3:
                     screen.blit(CuadradoBlanco, (i * 100, j * 100))
 
-    def marcarPorMouse(self, posMouse, jugadasPosibles):
+    def marcarPorMouse(self, posMouse):
+        jugadas = self.generarJugadasPosibles()
         x = int(math.trunc(posMouse[0] / 100))
         y = int(math.trunc(posMouse[1] / 100))
 
@@ -131,8 +130,9 @@ class Tablero:
             for j in range(0, 6):
                 if i == x and j == y:
                     if self.tablero[i][j] == 0:
-                        if (x, y) in jugadasPosibles:
-                            self.actualizarTablero(x, y, 3)
+                        if (x, y) in jugadas:
+                            self.tablero[x][y] = 3
+
 
     def restablecerBlanco(self, posMouse):
         x = int(math.trunc(posMouse[0] / 100))
@@ -148,44 +148,23 @@ class Tablero:
         for i in range(0, 6):
             print(self.tablero[i])
 
-    def clickear_tablero(self, posMouse, jugador):
+    def clickear_tablero(self, posMouse):
 
-        if pygame.mouse.get_pressed()[0] and jugador == 1:
+        if pygame.mouse.get_pressed()[0] and self.turno == 1:
             x = int(math.trunc(posMouse[0] / 100))
             y = int(math.trunc(posMouse[1] / 100))
             print(x, y)
             if self.tablero[x][y] == 3:
                 self.tablero[x][y] = 1
+                self.cambiar_turno()
 
-        if pygame.mouse.get_pressed()[0] and jugador == 2:
+        if pygame.mouse.get_pressed()[0] and self.turno == 2:
             x = int(math.trunc(posMouse[0] / 100))
             y = int(math.trunc(posMouse[1] / 100))
             if self.tablero[x][y] == 3:
                 self.tablero[x][y] = 2
+                self.cambiar_turno()
 
-
-
-
-def renderizarTablero(tablero: Tablero, screen):
-    CuadradoAzul = pygame.image.load("sprites/CuadradoAzul.png")
-    CuadradoAzul = pygame.transform.scale(CuadradoAzul, (100, 100))
-    CuadradoRojo = pygame.image.load("sprites/CuadradoRojo.png")
-    CuadradoRojo = pygame.transform.scale(CuadradoRojo, (100, 100))
-    CuadradoGris = pygame.image.load("sprites/CuadradoGris.png")
-    CuadradoGris = pygame.transform.scale(CuadradoGris, (100, 100))
-    CuadradoBlanco = pygame.image.load("sprites/CuadradoBlanco.png")
-    CuadradoBlanco = pygame.transform.scale(CuadradoBlanco, (100, 100))
-
-    for i in range(0, 6):
-        for j in range(0, 6):
-            if tablero.tablero[i][j] == 0:
-                screen.blit(CuadradoGris, (i * 100, j * 100))
-            if tablero.tablero[i][j] == 1:
-                screen.blit(CuadradoRojo, (i * 100, j * 100))
-            if tablero.tablero[i][j] == 2:
-                screen.blit(CuadradoAzul, (i * 100, j * 100))
-            if tablero.tablero[i][j] == 3:
-                screen.blit(CuadradoBlanco, (i * 100, j * 100))
 
 
 """
@@ -199,13 +178,9 @@ def renderizarTablero(tablero: Tablero, screen):
 def main():
     size = width, height = 600, 700
     background = 246, 249, 249
-
     screen = pygame.display.set_mode(size)
-
-    tablero = Tablero()
     clock = pygame.time.Clock()
-
-    juego = JuegoOtello(tablero.tablero, 1)
+    juego = JuegoOtello(2)
 
     while 1:
         for event in pygame.event.get():
@@ -215,16 +190,13 @@ def main():
 
         posMouse = pygame.mouse.get_pos()
 
-        juego.setTablero(tablero.tablero)
-
-        jugadasPosibles = juego.generarJugadasPosibles(1)
-
-        tablero.marcarPorMouse(posMouse, jugadasPosibles)
-        tablero.clickear_tablero(posMouse, 1)
+        juego.marcarPorMouse(posMouse)
+        juego.clickear_tablero(posMouse)
         clock.tick(30)
 
-        tablero.renderizarTablero(screen)
-        tablero.DepImprimirtablero()
+        juego.renderizarTablero(screen)
+        juego.restablecerBlanco(posMouse)
+        juego.DepImprimirtablero()
         pygame.display.flip()
 
 
