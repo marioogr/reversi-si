@@ -8,7 +8,7 @@ pygame.init()
 
 # Jugador 1 = 1, Agente = 2
 
-class JuegoOtello:
+class JuegoReversi:
     def __init__(self, turno):
         self.tablero = [
             [0, 0, 0, 0, 0, 0],
@@ -232,6 +232,44 @@ class JuegoOtello:
                     # flips
                     self.tablero[pos[0]][pos[1]] = jugador
 
+    def contar_fichas(self):
+        j1=0
+        j2=0
+        vacio=0
+
+        for x in range(6):
+            for y in range(6):
+                if self.tablero[x][y]==1:
+                    j1=j1+1
+                elif self.tablero[x][y]==2:
+                    j2=j2+1
+                elif self.tablero[x][y]==0 or self.tablero[x][y] == 3:
+                    vacio=vacio+1
+
+
+        return j1,j2,vacio
+
+    def endgame(self):
+
+        j1,j2,vacio=self.contar_fichas()
+
+        if j1==0 or j2==0 or vacio==0 :
+            print('primer if',j1,j2,vacio)
+            return True
+
+        if self.generarJugadasPosibles() == []:
+            print('segundo if')
+            return True
+
+        return False
+
+
+
+
+
+
+
+
 
 """
 0 = Gris no seleccionado
@@ -246,11 +284,12 @@ def main():
     background = 246, 249, 249
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
-    juego = JuegoOtello(2)
+    juego = JuegoReversi(1)
 
     while 1:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT: sys.exit()
+            if event.type == pygame.QUIT:
+                sys.exit()
 
         screen.fill(background)
 
