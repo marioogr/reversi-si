@@ -1,7 +1,7 @@
 import sys
 import pygame
 import math
-import pandas as pd
+
 
 pygame.init()
 
@@ -84,19 +84,8 @@ class JuegoReversi:
 
 
 
-    def CalcularUtilidad(self):
-        count = 0
-        for i in range(0, 6):
-            for j in range(0, 6):
-                if self.tablero[i][j] == self.turno:
-                    count = count + 1
-        return count
 
-    def evaluarTermino(self):
-        if 0 in self.tablero:
-            self.completado = True
-        else:
-            self.completado = False
+
 
     def minMax(self):
         raise NotImplementedError
