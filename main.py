@@ -82,6 +82,8 @@ class JuegoReversi:
         print(jugadasPosibles)
         return jugadasPosibles
 
+
+
     def CalcularUtilidad(self):
         count = 0
         for i in range(0, 6):
@@ -109,6 +111,20 @@ class JuegoReversi:
         CuadradoGris = pygame.transform.scale(CuadradoGris, (100, 100))
         CuadradoBlanco = pygame.image.load("sprites/CuadradoBlanco.png")
         CuadradoBlanco = pygame.transform.scale(CuadradoBlanco, (100, 100))
+        fuente = pygame.font.SysFont("segoe print", 40)
+        j1_texto = fuente.render(f"J1", True, [255, 0, 50])
+        j1_score= fuente.render(f"{self.contar_fichas()[0]}", True, [255, 0, 50])
+        screen.blit(j1_texto, (100, 585))
+        screen.blit(j1_score, (100, 630))
+        j2_texto = fuente.render(f"J2", True, [0, 0, 255])
+        j2_score = fuente.render(f"{self.contar_fichas()[1]}", True, [0, 0, 255])
+        screen.blit(j2_texto, (450, 585))
+        screen.blit(j2_score, (450, 630))
+
+        if self.turno==1:
+            screen.blit(CuadradoRojo, (250, 600))
+        else:
+            screen.blit(CuadradoAzul, (250, 600))
 
         for i in range(0, 6):
             for j in range(0, 6):
@@ -120,6 +136,7 @@ class JuegoReversi:
                     screen.blit(CuadradoAzul, (i * 100, j * 100))
                 if self.tablero[i][j] == 3:
                     screen.blit(CuadradoBlanco, (i * 100, j * 100))
+
 
     def marcarPorMouse(self, posMouse):
         jugadas = self.generarJugadasPosibles()
@@ -159,6 +176,8 @@ class JuegoReversi:
                 for i in range(1, 7):
                     self.voltear(i, (x, y), 1)
                 self.cambiar_turno()
+            else:
+                pass
 
         if pygame.mouse.get_pressed()[0] and self.turno == 2:
             x = int(math.trunc(posMouse[0] / 100))
@@ -168,6 +187,9 @@ class JuegoReversi:
                 for i in range(1, 9):
                     self.voltear(i, (x, y), 2)
                 self.cambiar_turno()
+            else:
+                pass
+        self.endgame()
 
     def voltear(self, direccion, jugada, jugador):
         """ Flips (capturates) the pieces of the given color in the given direction
@@ -253,15 +275,45 @@ class JuegoReversi:
 
         j1,j2,vacio=self.contar_fichas()
 
-        if j1==0 or j2==0 or vacio==0 :
+        if j1==0 or j2==0 or vacio == 0 :
             print('primer if',j1,j2,vacio)
+            self.completado=True
             return True
 
         if self.generarJugadasPosibles() == []:
             print('segundo if')
+            self.completado=True
             return True
 
         return False
+
+    def render_ganador(self,screen):
+
+        if self.completado==True:
+            CuadradoAmarillo = pygame.image.load("sprites/CuadradoAmarillo.png")
+            CuadradoAmarillo = pygame.transform.scale(CuadradoAmarillo, (100, 100))
+            for x in range(6):
+                for y in range(6):
+                    screen.blit(CuadradoAmarillo, (x * 100, y * 100))
+            j1, j2, empty = self.contar_fichas()
+            fuente = pygame.font.SysFont("segoe print", 40)
+            texto = fuente.render(f"Ganador:", True, [255, 0, 50])
+
+            if j1 > j2:
+                print("Gano J1")
+                texto = fuente.render(f"Ganador: J1", True, [0, 0, 0])
+            elif j2 > j1:
+                print("Gano J2")
+                texto = fuente.render(f"Ganador: J2", True, [0, 0, 0])
+            elif j1 == j2:
+                print("Empate")
+                texto = fuente.render(f"Empate", True, [0, 0, 0])
+
+            screen.blit(texto, (200, 320))
+
+
+
+
 
 
 
@@ -300,6 +352,7 @@ def main():
         clock.tick(30)
 
         juego.renderizarTablero(screen)
+        juego.render_ganador(screen)
         juego.restablecerBlanco(posMouse)
         juego.DepImprimirtablero()
         pygame.display.flip()
