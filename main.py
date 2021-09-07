@@ -9,7 +9,19 @@ pygame.init()
 # Jugador 1 = 1, Agente = 2
 
 class JuegoReversi:
+    """Clase Juego Reversi que controlara y registrara todos los eventos del juego"""
     def __init__(self, turno):
+        """Constructor de la clase con los atributos principales
+         tablero es una matriz que tendra la representacion y los estados del juego durante su ejecución
+         0=celda vacia
+         1=fichas del jugador 1 (rojo)
+         2=fichas del jugador 2 (azul)
+         3=posible lugar donde se colocaran fichas segun jugador
+
+        completo es un atributo boleano que representa si el juego termina al estar el tablero lleno
+
+        turno es un atributo que representa el turno de uno de los 2 jugadores
+        """
         self.tablero = [
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
@@ -18,17 +30,18 @@ class JuegoReversi:
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
         ]
-        self.completado = False
-        self.turno = turno
+        self.completado = False #  atributo boleano que representa si el juego termina al estar el tablero lleno
+        self.turno = turno # atributo que representa el turno de uno de los 2 jugadores
 
     def cambiar_turno(self):
+        """metodo que intercala el turno de los jugadores luego de realizar un movimiento"""
         if self.turno == 1:
             self.turno=2
         else:
             self.turno=1
 
     def busqueda(self, fila, columna):
-
+        """metodo que permite buscar las posibles casillas donde el jugador puede colocar fichas"""
         if self.turno == 1:
             otro = 2
         else:
@@ -56,6 +69,7 @@ class JuegoReversi:
         return casillas
 
     def verifica_direccion(self, fila, columna, x, y, otro):
+        """metodo que verifica si en la direccion existen fichas del jugador contrario y retorna la celda vacia de existir"""
         i = fila + x
         j = columna + y
         if 0 <= i < 6 and 0 <= j < 6 and self.tablero[i][j] == otro:
@@ -69,7 +83,7 @@ class JuegoReversi:
 
     def generarJugadasPosibles(self):
         """
-        Retorna un arreglo de coordenadas de las jugadas posibles 
+        Retorna un arreglo de coordenadas de las jugadas posibles segun el turno del jugador
 
         """
 
@@ -91,6 +105,7 @@ class JuegoReversi:
         raise NotImplementedError
 
     def renderizarTablero(self, screen):
+        """Metodo encargado de renderizar en pantalla todos los asets necesarios para la ejecucion de este"""
 
         CuadradoAzul = pygame.image.load("sprites/CuadradoAzul.png")
         CuadradoAzul = pygame.transform.scale(CuadradoAzul, (100, 100))
@@ -128,6 +143,9 @@ class JuegoReversi:
 
 
     def marcarPorMouse(self, posMouse):
+        """Metodo que obriene las coordenadas del mause dentro de la pantalla y si coincide con la celda del tablero con valor 0 (celda vacia)
+            y esta dento de las posibles jugadas lo reemplaza con el valor 3 mostrandoce un cuadrado blanco
+        """
         jugadas = self.generarJugadasPosibles()
         x = int(math.trunc(posMouse[0] / 100))
         y = int(math.trunc(posMouse[1] / 100))
@@ -141,6 +159,7 @@ class JuegoReversi:
 
 
     def restablecerBlanco(self, posMouse):
+        """Metodo que permite restablecer de blanco a  plomo la celda si el jugador retira el mouse de esta"""
         x = int(math.trunc(posMouse[0] / 100))
         y = int(math.trunc(posMouse[1] / 100))
 
@@ -151,38 +170,37 @@ class JuegoReversi:
                         self.tablero[i][j] = 0
 
     def DepImprimirtablero(self):
+        """Metodo que imprime en terminal el tablero"""
         for i in range(0, 6):
             print(self.tablero[i])
 
     def clickear_tablero(self, posMouse):
+        """Metodo que registra si el jugador hace click en una de las celdas posibles reemplazandola con el color del jugador"""
         jugadas = self.generarJugadasPosibles()
-        if pygame.mouse.get_pressed()[0] and self.turno == 1:
-            x = int(math.trunc(posMouse[0] / 100))
-            y = int(math.trunc(posMouse[1] / 100))
+        x = int(math.trunc(posMouse[0] / 100))
+        y = int(math.trunc(posMouse[1] / 100))
+        if pygame.mouse.get_pressed()[0] and self.turno == 1 and y !=6:
+
             print(x, y)
             if self.tablero[x][y] == 3:
                 self.tablero[x][y] = 1
                 for i in range(1, 7):
                     self.voltear(i, (x, y), 1)
                 self.cambiar_turno()
-            else:
-                pass
 
-        if pygame.mouse.get_pressed()[0] and self.turno == 2:
-            x = int(math.trunc(posMouse[0] / 100))
-            y = int(math.trunc(posMouse[1] / 100))
+
+        if pygame.mouse.get_pressed()[0] and self.turno == 2 and y !=6:
+
             if self.tablero[x][y] == 3:
                 self.tablero[x][y] = 2
                 for i in range(1, 9):
                     self.voltear(i, (x, y), 2)
                 self.cambiar_turno()
-            else:
-                pass
+
         self.endgame()
 
     def voltear(self, direccion, jugada, jugador):
-        """ Flips (capturates) the pieces of the given color in the given direction
-        (1=North,2=Northeast...) from position. """
+        """Metodo que obtiene las celdas que seran afectadas por la jugada cambiando su color  """
 
         if direccion == 1:
             # north
@@ -244,6 +262,7 @@ class JuegoReversi:
                     self.tablero[pos[0]][pos[1]] = jugador
 
     def contar_fichas(self):
+        """Metodo que obtiene la utilidad de la jugada (fichas de los 2 jugadores y fichas vacias """
         j1=0
         j2=0
         vacio=0
@@ -261,6 +280,12 @@ class JuegoReversi:
         return j1,j2,vacio
 
     def endgame(self):
+        """Metodo que verifica si el juego termino bajo diferentes condiciones
+            1.-j1 sin fichas en tablero
+            2.-j2 si fechas en tablero
+            3.- tablero completo(sin casillas vacias)
+            4.-j1 sin jugadas posibles
+            5- j2 sin jugadas posibles"""
 
         j1,j2,vacio=self.contar_fichas()
 
@@ -277,6 +302,7 @@ class JuegoReversi:
         return False
 
     def render_ganador(self,screen):
+        """Metodo que se activa al terminar el juego y presenta al ganador de este o el empate"""
 
         if self.completado==True:
             CuadradoAmarillo = pygame.image.load("sprites/CuadradoAmarillo.png")
@@ -321,6 +347,7 @@ class JuegoReversi:
 
 
 def main():
+    """Funcion main que ejecuta el juego"""
     size = width, height = 600, 700
     background = 246, 249, 249
     screen = pygame.display.set_mode(size)
