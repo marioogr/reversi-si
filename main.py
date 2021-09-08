@@ -181,10 +181,10 @@ class JuegoReversi:
         y = int(math.trunc(posMouse[1] / 100))
         if pygame.mouse.get_pressed()[0] and self.turno == 1 and y !=6:
 
-            print(x, y)
+
             if self.tablero[x][y] == 3:
                 self.tablero[x][y] = 1
-                for i in range(1, 7):
+                for i in range(1, 9):
                     self.voltear(i, (x, y), 1)
                 self.cambiar_turno()
 

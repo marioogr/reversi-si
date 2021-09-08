@@ -15,7 +15,7 @@
 ## Implementar poda
 
 # Errores
-## comportamiento anomalo de metodo fichas afectadas
+
 
 # Definiciones
 ## Dificultad = profundidad del minmax
