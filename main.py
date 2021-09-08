@@ -78,7 +78,7 @@ class JuegoReversi:
             while 0 <= i < 6 and 0 <= j < 6 and self.tablero[i][j] == otro:
                 i += x
                 j += y
-            if i >= 0 and j >= 0 and i < 6 and j < 6 and self.tablero[i][j] == 0:
+            if i >= 0 and j >= 0 and i < 6 and j < 6 and (self.tablero[i][j] == 0 or self.tablero[i][j] == 3):
                 return i, j
 
     def generarJugadasPosibles(self):
@@ -152,9 +152,8 @@ class JuegoReversi:
 
         for i in range(0, 6):
             for j in range(0, 6):
-                if i == x and j == y:
-                    if self.tablero[i][j] == 0:
-                        if (x, y) in jugadas:
+                if self.tablero[i][j] == 0:
+                    if (x, y) in jugadas:
                             self.tablero[x][y] = 3
 
 
@@ -370,7 +369,7 @@ def main():
         juego.renderizarTablero(screen)
         juego.render_ganador(screen)
         juego.restablecerBlanco(posMouse)
-        juego.DepImprimirtablero()
+        #juego.DepImprimirtablero()
         pygame.display.flip()
 
 
