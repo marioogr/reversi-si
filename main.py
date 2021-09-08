@@ -81,7 +81,7 @@ class JuegoReversi:
             if i >= 0 and j >= 0 and i < 6 and j < 6 and (self.tablero[i][j] == 0 or self.tablero[i][j] == 3):
                 return i, j
 
-    def generarJugadasPosibles(self):
+    def generarJugadasPosibles(self,turno):
         """
         Retorna un arreglo de coordenadas de las jugadas posibles segun el turno del jugador
 
@@ -93,16 +93,39 @@ class JuegoReversi:
                 if self.tablero[i][j] == self.turno:
                     jugadasPosibles = jugadasPosibles + self.busqueda(i, j)
         jugadasPosibles = list(set(jugadasPosibles))
-        print(jugadasPosibles)
+        #print(jugadasPosibles)
         return jugadasPosibles
 
+    def jugar(self,jugada):
+        self.tablero[jugada[0]][jugada[1]]=2
 
+    def deshacer_jugada(self,jugada):
+        self.tablero[jugada[0]][jugada[1]]=0
 
-
-
-
-    def minMax(self):
-        raise NotImplementedError
+    def minimax(self, etapa, secuencia, secuencias):
+        if self.completado:
+            secuencias.append(secuencia.copy())
+            return [-1 * self.contar_fichas()[0]]
+        if etapa == 1:
+            valor = [-1000, None]
+        else:
+            valor = [1000, None]
+        jugadas_posibles = self.generarJugadasPosibles(2)
+        for jugada in jugadas_posibles:
+            self.jugar(jugada)
+            secuencia.append(jugada)
+            opcion = self.minimax(etapa * -1, secuencia, secuencias)
+            # maximizar
+            if etapa == 1:
+                if valor[0] < opcion[0]:
+                    valor = [opcion[0], jugada]
+            else:
+                # minimizar
+                if valor[0] > opcion[0]:
+                    valor = [opcion[0], jugada]
+            self.deshacer_jugada(jugada)
+            secuencia.pop()
+        return valor
 
     def renderizarTablero(self, screen):
         """Metodo encargado de renderizar en pantalla todos los asets necesarios para la ejecucion de este"""
@@ -146,7 +169,7 @@ class JuegoReversi:
         """Metodo que obriene las coordenadas del mause dentro de la pantalla y si coincide con la celda del tablero con valor 0 (celda vacia)
             y esta dento de las posibles jugadas lo reemplaza con el valor 3 mostrandoce un cuadrado blanco
         """
-        jugadas = self.generarJugadasPosibles()
+        jugadas = self.generarJugadasPosibles(self.turno)
         x = int(math.trunc(posMouse[0] / 100))
         y = int(math.trunc(posMouse[1] / 100))
 
@@ -175,7 +198,7 @@ class JuegoReversi:
 
     def clickear_tablero(self, posMouse):
         """Metodo que registra si el jugador hace click en una de las celdas posibles reemplazandola con el color del jugador"""
-        jugadas = self.generarJugadasPosibles()
+        jugadas = self.generarJugadasPosibles(self.turno)
         x = int(math.trunc(posMouse[0] / 100))
         y = int(math.trunc(posMouse[1] / 100))
         if pygame.mouse.get_pressed()[0] and self.turno == 1 and y !=6:
@@ -189,11 +212,13 @@ class JuegoReversi:
 
 
         if pygame.mouse.get_pressed()[0] and self.turno == 2 and y !=6:
-
-            if self.tablero[x][y] == 3:
+            #m=self.minimax(1,[],[])
+            #jugada=m[1]
+            #print (m)
+            if self.tablero[x][y]== 3:
                 self.tablero[x][y] = 2
                 for i in range(1, 9):
-                    self.voltear(i, (x, y), 2)
+                    self.voltear(i, (x,y), 2)
                 self.cambiar_turno()
 
         self.endgame()
@@ -293,7 +318,7 @@ class JuegoReversi:
             self.completado=True
             return True
 
-        if self.generarJugadasPosibles() == []:
+        if self.generarJugadasPosibles(1) == [] and self.generarJugadasPosibles(2) == []:
             print('segundo if')
             self.completado=True
             return True
