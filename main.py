@@ -140,6 +140,14 @@ class JuegoReversi:
                     screen.blit(CuadradoAzul, (i * 100, j * 100))
                 if self.tablero[i][j] == 3:
                     screen.blit(CuadradoBlanco, (i * 100, j * 100))
+    def renderMenu(self, screen):
+        fuente = pygame.font.SysFont("segoe print", 40)
+        j1_texto = fuente.render(f"J1", True, [255, 0, 50])
+        screen.blit(j1_texto, (100, 585))
+        CuadradoGris = pygame.image.load("sprites/CuadradoGris.png")
+        CuadradoGris = pygame.transform.scale(CuadradoGris, (100, 100))
+        screen.blit(CuadradoGris, (100, 100))
+
 
 
     def marcarPorMouse(self, posMouse):
@@ -330,14 +338,6 @@ class JuegoReversi:
 
 
 
-
-
-
-
-
-
-
-
 """
 0 = Gris no seleccionado
 1 = Rojo / Jugador 1
@@ -354,24 +354,29 @@ def main():
     clock = pygame.time.Clock()
     juego = JuegoReversi(1)
 
+    dificult = 0
+    started = False
+
     while 1:
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+        if started:
+            screen.fill(background)
 
-        screen.fill(background)
+            posMouse = pygame.mouse.get_pos()
 
-        posMouse = pygame.mouse.get_pos()
+            juego.marcarPorMouse(posMouse)
+            juego.clickear_tablero(posMouse)
+            clock.tick(30)
 
-        juego.marcarPorMouse(posMouse)
-        juego.clickear_tablero(posMouse)
-        clock.tick(30)
-
-        juego.renderizarTablero(screen)
-        juego.render_ganador(screen)
-        juego.restablecerBlanco(posMouse)
-        juego.DepImprimirtablero()
-        pygame.display.flip()
-
+            juego.renderizarTablero(screen)
+            juego.render_ganador(screen)
+            juego.restablecerBlanco(posMouse)
+            juego.DepImprimirtablero()
+            pygame.display.flip()
+        else: 
+            juego.renderMenu(screen)
 
 main()
