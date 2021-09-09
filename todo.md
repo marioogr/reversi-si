@@ -11,7 +11,8 @@
 ## Arreglar direccion del tablero, menu(dificultad) (Mario)
 ## reinicio juego(None)
 # Backlog
-## Implementacion del minmax, definir input del minmax
+## Implementacion del minmax(Pablo):heavy_check_mark:
+## input de importancia minimax(profundidad)
 ## Implementar poda
 
 # Errores

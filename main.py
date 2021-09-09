@@ -1,6 +1,8 @@
 import sys
 import pygame
 import math
+import random
+import time
 
 
 pygame.init()
@@ -33,6 +35,7 @@ class JuegoReversi:
         self.completado = False #  atributo boleano que representa si el juego termina al estar el tablero lleno
         self.turno = turno # atributo que representa el turno de uno de los 2 jugadores
 
+
     def cambiar_turno(self):
         """metodo que intercala el turno de los jugadores luego de realizar un movimiento"""
         if self.turno == 1:
@@ -40,9 +43,9 @@ class JuegoReversi:
         else:
             self.turno=1
 
-    def busqueda(self, fila, columna):
+    def busqueda(self, fila, columna,turno):
         """metodo que permite buscar las posibles casillas donde el jugador puede colocar fichas"""
-        if self.turno == 1:
+        if turno == 1:
             otro = 2
         else:
             otro = 1
@@ -90,32 +93,46 @@ class JuegoReversi:
         jugadasPosibles = []
         for i in range(6):
             for j in range(6):
-                if self.tablero[i][j] == self.turno:
-                    jugadasPosibles = jugadasPosibles + self.busqueda(i, j)
+                if self.tablero[i][j] == turno:
+                    jugadasPosibles = jugadasPosibles + self.busqueda(i, j,turno)
         jugadasPosibles = list(set(jugadasPosibles))
-        #print(jugadasPosibles)
+
         return jugadasPosibles
 
     def jugar(self,jugada):
-        self.tablero[jugada[0]][jugada[1]]=2
+        self.tablero[jugada[0]][jugada[1]] = 2
 
     def deshacer_jugada(self,jugada):
-        self.tablero[jugada[0]][jugada[1]]=0
+        self.tablero[jugada[0]][jugada[1]] = 0
 
-    def minimax(self, etapa, secuencia, secuencias):
-        if self.completado:
+    def minimax(self, etapa, secuencia, secuencias, profundidad):
+
+        if self.endgame() or profundidad >= 6:
+
             secuencias.append(secuencia.copy())
-            return [-1 * self.contar_fichas()[0]]
+            j1,j2,vacio=self.contar_fichas()
+            if j1>j2:
+                return [-1]
+            elif j2>j1:
+                return [1]
+            else:
+                return [0]
+
         if etapa == 1:
             valor = [-1000, None]
+            jugadas_posibles = self.generarJugadasPosibles(2)
         else:
             valor = [1000, None]
-        jugadas_posibles = self.generarJugadasPosibles(2)
+            jugadas_posibles = self.generarJugadasPosibles(1)
+
+
+
         for jugada in jugadas_posibles:
             self.jugar(jugada)
             secuencia.append(jugada)
-            opcion = self.minimax(etapa * -1, secuencia, secuencias)
+            opcion = self.minimax(etapa * -1, secuencia, secuencias,profundidad+1)
             # maximizar
+
             if etapa == 1:
                 if valor[0] < opcion[0]:
                     valor = [opcion[0], jugada]
@@ -211,15 +228,24 @@ class JuegoReversi:
                 self.cambiar_turno()
 
 
-        if pygame.mouse.get_pressed()[0] and self.turno == 2 and y !=6:
-            #m=self.minimax(1,[],[])
-            #jugada=m[1]
-            #print (m)
-            if self.tablero[x][y]== 3:
-                self.tablero[x][y] = 2
-                for i in range(1, 9):
-                    self.voltear(i, (x,y), 2)
-                self.cambiar_turno()
+        if self.turno == 2 and y !=6:
+            a=[]
+            b=[]
+            inicio=time.time()
+            m=self.minimax(1,a,b,0)
+            fin=time.time()
+            print(f"nodos: {len(b)},tiempo ejecucion: {fin-inicio} ")
+
+            jugada=m[1]
+            if jugada==None:
+                r=random.randint(0,len(jugadas))
+                jugada=jugadas[r]
+
+
+            self.tablero[jugada[0]][jugada[1]] = 2
+            for i in range(1, 9):
+                self.voltear(i, (jugada[0],jugada[1]), 2)
+            self.cambiar_turno()
 
         self.endgame()
 
@@ -314,12 +340,12 @@ class JuegoReversi:
         j1,j2,vacio=self.contar_fichas()
 
         if j1==0 or j2==0 or vacio == 0 :
-            print('primer if',j1,j2,vacio)
+
             self.completado=True
             return True
 
         if self.generarJugadasPosibles(1) == [] and self.generarJugadasPosibles(2) == []:
-            print('segundo if')
+
             self.completado=True
             return True
 
@@ -339,13 +365,13 @@ class JuegoReversi:
             texto = fuente.render(f"Ganador:", True, [255, 0, 50])
 
             if j1 > j2:
-                print("Gano J1")
+
                 texto = fuente.render(f"Ganador: J1", True, [0, 0, 0])
             elif j2 > j1:
-                print("Gano J2")
+
                 texto = fuente.render(f"Ganador: J2", True, [0, 0, 0])
             elif j1 == j2:
-                print("Empate")
+
                 texto = fuente.render(f"Empate", True, [0, 0, 0])
 
             screen.blit(texto, (200, 320))
