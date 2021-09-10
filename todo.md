@@ -8,7 +8,8 @@
 ## Fichas afectadas -> Tablero con fichas afectadas (Jaime/Pablo):heavy_check_mark:
 ## Funcion de termino(mapa completo,sin jugadas)(Pablo):heavy_check_mark:
 ## Funcion presentar ganador(comparar fichas de jugadores)(Pablo):heavy_check_mark:
-## Arreglar direccion del tablero, menu(dificultad) (Mario)
+## Arreglar direccion del tablero, menu(dificultad) (Mario/Pablo):heavy_check_mark:
+## outputs de salida pedidos(Pablo):heavy_check_mark:
 ## reinicio juego(None)
 # Backlog
 ## Implementacion del minmax(Pablo):heavy_check_mark:

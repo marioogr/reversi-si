@@ -34,7 +34,18 @@ class JuegoReversi:
         ]
         self.completado = False #  atributo boleano que representa si el juego termina al estar el tablero lleno
         self.turno = turno # atributo que representa el turno de uno de los 2 jugadores
+        self.profundidad=0
+        self.game=False
 
+    def set_game(self,game):
+        self.game=game
+
+    def set_dificultad(self,dificultad):
+
+        if dificultad==1:
+            self.profundidad=2
+        elif dificultad==2:
+            self.profundidad=6
 
     def cambiar_turno(self):
         """metodo que intercala el turno de los jugadores luego de realizar un movimiento"""
@@ -97,7 +108,7 @@ class JuegoReversi:
 
     def minimax(self, etapa, secuencia, secuencias, profundidad):
 
-        if self.endgame() or profundidad >= 6:
+        if self.endgame() or profundidad >= self.profundidad:
 
             secuencias.append(secuencia.copy())
             j1, j2, vacio = self.contar_fichas()
@@ -135,6 +146,7 @@ class JuegoReversi:
         return valor
 
     def renderizarTablero(self, screen):
+
         """Metodo encargado de renderizar en pantalla todos los asets necesarios para la ejecucion de este"""
 
         CuadradoAzul = pygame.image.load("sprites/CuadradoAzul.png")
@@ -208,13 +220,14 @@ class JuegoReversi:
         jugadas = self.generarJugadasPosibles(self.turno)
         x = int(math.trunc(posMouse[0] / 100))
         y = int(math.trunc(posMouse[1] / 100))
-        if pygame.mouse.get_pressed()[0] and self.turno == 1 and y !=6:
+        if pygame.mouse.get_pressed()[0] and self.turno == 1 and y !=6 and self.game==True:
 
             if self.tablero[x][y] == 3:
                 self.tablero[x][y] = 1
                 for i in range(1, 9):
                     self.voltear(i, (x, y), 1)
                 self.cambiar_turno()
+
 
         if self.turno == 2 and y != 6:
             a=[]
@@ -233,7 +246,7 @@ class JuegoReversi:
             for i in range(1, 9):
                 self.voltear(i, (jugada[0], jugada[1]), 2)
             self.cambiar_turno()
-
+        self.set_game(True)
         self.endgame()
 
     def voltear(self, direccion, jugada, jugador):
@@ -373,13 +386,62 @@ class JuegoReversi:
 
 def main():
     """Funcion main que ejecuta el juego"""
+
+    #print("Elija nivel de dificultad")
+    #dificultad = int(input())
+
     size = width, height = 600, 700
     background = 246, 249, 249
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     juego = JuegoReversi(1)
 
-    while 1:
+    menu=True
+
+    CuadradoAmarillo = pygame.image.load("sprites/CuadradoAmarillo.png")
+    btnfacil=pygame.image.load("sprites/btnfacil.png")
+    btndificil=pygame.image.load("sprites/btndificil.png")
+    CuadradoAmarillo = pygame.transform.scale(CuadradoAmarillo, (100, 100))
+    btnfacil = pygame.transform.scale(btnfacil, (100, 100))
+    btndificil= pygame.transform.scale(btndificil, (100, 100))
+    fuente = pygame.font.SysFont("segoe print", 40)
+    fuente2 = pygame.font.SysFont("segoe print", 80)
+    texto = fuente.render(f"Elija la dificultad:", True, [0, 0, 0])
+    titulo = fuente2.render("Reversi Games",True,[0,0,0])
+    desarrolladores =fuente.render("Devs:Mario,Pablo,Jaime,Ariel",True,[0,0,0])
+
+    while menu==True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+        posMouse = pygame.mouse.get_pos()
+        m = int(math.trunc(posMouse[0] / 100))
+        n = int(math.trunc(posMouse[1] / 100))
+
+        for x in range(6):
+            for y in range(6):
+                screen.blit(CuadradoAmarillo, (x * 100, y * 100))
+
+        screen.blit(texto, (120, 200))
+        screen.blit(btnfacil,(100,300))
+        screen.blit(btndificil,(400,300))
+        screen.blit(titulo,(5,50))
+        screen.blit(desarrolladores,(0,500))
+
+        if pygame.mouse.get_pressed()[0] and m == 1 and n == 3:
+            print('facil')
+            juego.set_dificultad(1)
+            menu=False
+        elif pygame.mouse.get_pressed()[0] and m == 4 and n == 3:
+            print('dificil')
+
+            juego.set_dificultad(2)
+            menu=False
+
+        clock.tick(30)
+        pygame.display.flip()
+
+    while not menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
@@ -393,9 +455,11 @@ def main():
         clock.tick(30)
 
         juego.renderizarTablero(screen)
+
         juego.render_ganador(screen)
         juego.restablecerBlanco(posMouse)
         # juego.DepImprimirtablero()
+
         pygame.display.flip()
 
 
