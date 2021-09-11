@@ -241,6 +241,7 @@ class JuegoReversi:
             if jugada is None:
                 r = random.randint(0,len(jugadas))
                 jugada = jugadas[r]
+                print('randm')
 
             self.tablero[jugada[0]][jugada[1]] = 2
             for i in range(1, 9):
