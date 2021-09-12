@@ -68,11 +68,11 @@ class JuegoReversi:
             otro = 1
 
         casillas = []
-
+        # si la busqueda llega al limite de la matriz retorna las casillas encontradas
         if fila < 0 or fila > 7 or columna < 0 or columna > 7:
             return casillas
 
-        # For each direction search for possible positions to put a piece.
+        # Por cada direccion busca una posible posicion para colocar una ficha.
         for (x, y) in [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)]:
             pos = self.verifica_direccion(fila, columna, x, y, otro)
             if pos:
@@ -120,6 +120,7 @@ class JuegoReversi:
     def minimax(self, etapa, secuencia, secuencias, profundidad):
         """Metodo de busqueda con aprendizaje en el cual este trata de elejir el movimiento que
         maximice la utilidad  del computador y minimice la utilidad de las jugadas de su contrincante"""
+        # si el juego termina o se llega a la profundidad demarcada
         if self.endgame() or profundidad >= self.profundidad:
 
             secuencias.append(secuencia.copy())
@@ -176,12 +177,12 @@ class JuegoReversi:
         j2_score = fuente.render(f"{self.contar_fichas()[1]}", True, [0, 0, 255])
         screen.blit(j2_texto, (450, 585))
         screen.blit(j2_score, (450, 630))
-
+        #renderizar color segun el turno
         if self.turno == 1:
             screen.blit(CuadradoRojo, (250, 600))
         else:
             screen.blit(CuadradoAzul, (250, 600))
-
+        # renderizar tablero
         for i in range(0, 6):
             for j in range(0, 6):
                 if self.tablero[i][j] == 0:
@@ -227,10 +228,12 @@ class JuegoReversi:
     def clickear_tablero(self, posMouse):
         """Metodo que registra si el jugador hace click en una de las celdas posibles
          reemplazandola con el color del jugador para luego voltear las fichas afectadas"""
-
+        #obtener jugadas posibles
         jugadas = self.generarJugadasPosibles(self.turno)
+        # obtener posicion en x,y del mause
         x = int(math.trunc(posMouse[0] / 100))
         y = int(math.trunc(posMouse[1] / 100))
+        # si se clickea en una casilla y es humano quien juega y no se presiona en la fila 6 y el estado es  en el juego
         if pygame.mouse.get_pressed()[0] and self.turno == 1 and y != 6 and self.game:
 
             if self.tablero[x][y] == 3:
@@ -238,31 +241,32 @@ class JuegoReversi:
                 for i in range(1, 9):
                     self.voltear(i, (x, y), 1)
                 self.cambiar_turno()
-
+        # si es la computadora quien juega  y no se presiona en la fila 6
         if self.turno == 2 and y != 6:
             a = []
             b = []
-            inicio = time.time()
-            m = self.minimax(1, a, b, 0)
-            fin = time.time()
-            print(f"nodos: {len(b)},tiempo ejecucion: {fin-inicio} ")
+            inicio = time.time() # inicio de temporizador
+            m = self.minimax(1, a, b, 0) # obtener mejor jugada por minimax
+            fin = time.time() # termino de temporizador
+            print(f"nodos: {len(b)},tiempo ejecucion: {fin-inicio} ") # impresion de la cantidad de nodos visitados y el tiempo de ejecucion de la jugada del computador
 
             jugada = m[1]
-            if jugada is None:
+            if jugada is None: # si no se encuentra jugada elegir jugada de manera aleatoria
                 r = random.randint(0, len(jugadas))
                 jugada = jugadas[r]
                 print('rand')
 
-            self.tablero[jugada[0]][jugada[1]] = 2
+            self.tablero[jugada[0]][jugada[1]] = 2 # ejecutar jugada
+
             for i in range(1, 9):
-                self.voltear(i, (jugada[0], jugada[1]), 2)
-            self.cambiar_turno()
+                self.voltear(i, (jugada[0], jugada[1]), 2) # ejecutar volteado de fichas afectadas
+            self.cambiar_turno() # cambio de turno
         self.set_game(True)
         self.endgame()
 
     def voltear(self, direccion, jugada, jugador):
         """Metodo que obtiene las celdas que seran afectadas por la jugada cambiando su color  """
-
+        # condicionales para poder ver en todas las direcciones desde la jugada realizada
         if direccion == 1:
             # arriba
             fila_inc = -1
@@ -296,7 +300,7 @@ class JuegoReversi:
             fila_inc = -1
             columna_inc = -1
 
-        places = []  # pieces to flip
+        places = []  #  variable de tipo array que guarda la posicion de las casillas a modificar
 
         i = jugada[0] + fila_inc
         j = jugada[1] + columna_inc
@@ -307,19 +311,19 @@ class JuegoReversi:
             otro = 1
 
         if i in range(6) and j in range(6) and self.tablero[i][j] == otro:
-            # assures there is at least one piece to flip
+            # se asegura de que al menos una pieza se da vuelta
             places = places + [(i, j)]
             i = i + fila_inc
             j = j + columna_inc
             while i in range(6) and j in range(6) and self.tablero[i][j] == otro:
-                # search for more pieces to flip
+                # busca otras piezas para girar
                 places = places + [(i, j)]
                 i = i + fila_inc
                 j = j + columna_inc
             if i in range(6) and j in range(6) and self.tablero[i][j] == jugador:
-                # found a piece of the right color to flip the pieces between
+                # busca una pieza del mismo color  para girar las piezas entre medio
                 for pos in places:
-                    # flips
+                    # giros
                     self.tablero[pos[0]][pos[1]] = jugador
 
     def contar_fichas(self):
