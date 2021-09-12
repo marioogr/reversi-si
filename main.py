@@ -401,14 +401,15 @@ def main():
 
 
 
-    size = width, height = 600, 700
-    background = 246, 249, 249
+    size = width, height = 600, 700 # tamaño pantalla
+    background = 246, 249, 249 # color de background
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
-    juego = JuegoReversi(1)
+    juego = JuegoReversi(1) # instancia del juego
 
-    menu=True
+    menu=True # flag para cambiar entre el menu y el juego
 
+    # obener las referencias de los sprites que se usaran en el juego
     CuadradoAmarillo = pygame.image.load("sprites/CuadradoAmarillo.png")
     btnfacil=pygame.image.load("sprites/btnfacil.png")
     btndificil=pygame.image.load("sprites/btndificil.png")
@@ -421,7 +422,7 @@ def main():
     titulo = fuente2.render("Reversi Games",True,[0,0,0])
     desarrolladores =fuente.render("Devs:Mario,Pablo,Jaime,Ariel",True,[0,0,0])
 
-    while menu==True:
+    while menu==True: #loop del menu
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
@@ -439,6 +440,7 @@ def main():
         screen.blit(titulo,(5,50))
         screen.blit(desarrolladores,(0,500))
 
+        #eleccion de dificultad
         if pygame.mouse.get_pressed()[0] and m == 1 and n == 3:
             print('facil')
             juego.set_dificultad(1)
@@ -452,24 +454,20 @@ def main():
         clock.tick(30)
         pygame.display.flip()
 
-    while not menu:
+    while not menu: #loop del juego
+        #evento de cierre del juego
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
 
         screen.fill(background)
-
         posMouse = pygame.mouse.get_pos()
-
         juego.marcarPorMouse(posMouse)
         juego.clickear_tablero(posMouse)
         clock.tick(30)
-
         juego.renderizarTablero(screen)
-
         juego.render_ganador(screen)
         juego.restablecerBlanco(posMouse)
-
         pygame.display.flip()
 
 
