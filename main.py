@@ -22,7 +22,12 @@ class JuegoReversi:
 
         completo es un atributo boleano que representa si el juego termina al estar el tablero lleno
 
-        turno es un atributo que representa el turno de uno de los 2 jugadores
+        turno es un atributo que representa el turno de uno de los 2 jugadores 1=J1,2=j2
+
+        profundidad representa el nivel de profundidad(por lo tanto dificultad del juego ) con el cual minimax buscara
+        una solucion en el arbol de soluciones
+
+        game es un atributo boleano que representa si el usuario esta en el menu o se encuentra en el juego
         """
         self.tablero = [
             [0, 0, 0, 0, 0, 0],
@@ -32,16 +37,17 @@ class JuegoReversi:
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
         ]
-        self.completado = False #  atributo boleano que representa si el juego termina al estar el tablero lleno
-        self.turno = turno # atributo que representa el turno de uno de los 2 jugadores
+        self.completado = False
+        self.turno = turno
         self.profundidad=0
         self.game=False
 
     def set_game(self,game):
+        """metodo que setea el estado de juego entre menu=False y en juego=True"""
         self.game=game
 
     def set_dificultad(self,dificultad):
-
+        """metodo que setea la dificultad/profundidad del juego que quiere el jugador 1=Facil 2=dificil"""
         if dificultad==1:
             self.profundidad=2
         elif dificultad==2:
@@ -101,13 +107,18 @@ class JuegoReversi:
         return jugadasPosibles
 
     def jugar(self,jugada):
+        """metodo que emula las jugadas posibles dentro del arbol de jugadas
+         usadas por minimax para obtener la posible utilidad """
         self.tablero[jugada[0]][jugada[1]] = 2
 
     def deshacer_jugada(self,jugada):
+        """Metodo que permite deshacer la jugada emulada para que no afecte al estado natural del juego
+        presentado al jugador"""
         self.tablero[jugada[0]][jugada[1]] = 0
 
     def minimax(self, etapa, secuencia, secuencias, profundidad):
-
+        """Metodo de busqueda con aprendizaje en el cual este trata de elejir el movimiento que
+        maximice la utilidad  del computador y minimice la utilidad de las jugadas de su contrincante"""
         if self.endgame() or profundidad >= self.profundidad:
 
             secuencias.append(secuencia.copy())
@@ -147,7 +158,7 @@ class JuegoReversi:
 
     def renderizarTablero(self, screen):
 
-        """Metodo encargado de renderizar en pantalla todos los asets necesarios para la ejecucion de este"""
+        """Metodo encargado de renderizar en pantalla todos los asets necesarios para la ejecucion del juego"""
 
         CuadradoAzul = pygame.image.load("sprites/CuadradoAzul.png")
         CuadradoAzul = pygame.transform.scale(CuadradoAzul, (100, 100))
@@ -184,7 +195,7 @@ class JuegoReversi:
                     screen.blit(CuadradoBlanco, (i * 100, j * 100))
 
     def marcarPorMouse(self, posMouse):
-        """Metodo que obriene las coordenadas del mause dentro de la pantalla y si coincide con la celda del tablero con valor 0 (celda vacia)
+        """Metodo que obtiene las coordenadas del mause dentro de la pantalla y si coincide con la celda del tablero con valor 0 (celda vacia)
             y esta dento de las posibles jugadas lo reemplaza con el valor 3 mostrandoce un cuadrado blanco
         """
         jugadas = self.generarJugadasPosibles(self.turno)
@@ -241,7 +252,7 @@ class JuegoReversi:
             if jugada is None:
                 r = random.randint(0,len(jugadas))
                 jugada = jugadas[r]
-                print('randm')
+                print('rand')
 
             self.tablero[jugada[0]][jugada[1]] = 2
             for i in range(1, 9):
@@ -388,8 +399,7 @@ class JuegoReversi:
 def main():
     """Funcion main que ejecuta el juego"""
 
-    #print("Elija nivel de dificultad")
-    #dificultad = int(input())
+
 
     size = width, height = 600, 700
     background = 246, 249, 249
@@ -459,7 +469,6 @@ def main():
 
         juego.render_ganador(screen)
         juego.restablecerBlanco(posMouse)
-        # juego.DepImprimirtablero()
 
         pygame.display.flip()
 
