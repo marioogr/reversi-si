@@ -252,9 +252,12 @@ class JuegoReversi:
 
             jugada = m[1]
             if jugada is None: # si no se encuentra jugada elegir jugada de manera aleatoria
-                r = random.randint(0, len(jugadas))
-                jugada = jugadas[r]
-                print('rand')
+                if len(jugadas) !=0:
+                    r = random.randint(0, len(jugadas))
+                    jugada = jugadas[r]
+                    print('rand')
+                else:
+                    pass
 
             self.tablero[jugada[0]][jugada[1]] = 2 # ejecutar jugada
 
